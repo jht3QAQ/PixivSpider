@@ -1,0 +1,33 @@
+#起始页 必填
+startPage=
+#结束页 必填
+endPage=
+
+#cookie 必填
+cookie=
+#连接超时设置 单位秒 选填 默认120
+connectTimeout=
+#读取超时设置 单位秒 选填 默认120
+readTimeout=
+
+#搜索关键字 必填
+keyword=
+#搜索模式 选填 默认saft 可选all/safe/r18
+mode=
+#语言 选填 默认zh
+lang=
+
+#线程数 选填 默认6
+threadPoolSize=
+#重试等待时间 选填 单位毫秒 默认5000
+retrySleepTime=
+
+#最少浏览数 选填 默认2000
+minViewCount=
+#最少收藏数 选填 默认500
+minBookmarkCount=
+#判断方法 选填 默认and 可选or/and
+how=
+
+#保存位置 选填 默认img
+fileUrl=
