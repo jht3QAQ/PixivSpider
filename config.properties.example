@@ -28,6 +28,21 @@ minViewCount=
 minBookmarkCount=
 #判断方法 选填 默认and 可选or/and
 how=
+#一个pid最多下载图片数量(多于此数量不下载此pid) 选填 默认5
+maxImg=
 
 #保存位置 选填 默认img
 fileUrl=
+
+#保存的文件名称 选填 默认 ${userId}_${baseName}
+#可选变量:
+#${baseName} 基础名称,即pid+第几画+扩展名
+#${userId} 画师的uid
+#${illustId} 画的pid
+#${illustTitle} 画的名称
+#${width} 画宽
+#${height} 画高
+#${viewCount} 浏览数
+#${bookmarkCount} 收藏数
+#${urlOriginal} 原画链接
+fileName=

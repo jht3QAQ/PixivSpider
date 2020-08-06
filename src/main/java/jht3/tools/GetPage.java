@@ -49,7 +49,7 @@ public class GetPage {
         }finally{
             if(res==null||!res.isSuccessful()){
                 if(res!=null)
-                    System.out.println("请求失败,code: "+res.code());
+                    System.out.println("请求失败,code: "+res.code()+" ,重新尝试中");
                 try {
                     Thread.sleep(Setting.retrySleepTime);
                 } catch (InterruptedException e) {

@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,6 +68,10 @@ public class PixivSpider {
                         JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
                         JsonArray jsonArr = jsonObj.getAsJsonArray("body");
                         int i = 0;
+                        if(jsonArr.size()> Setting.maxImg){
+                            System.out.println("跳过多图下载");
+                            return;
+                        }
                         for (JsonElement imgs : jsonArr) {
                             if(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString().contains("ugoira")) {
                                 System.out.println("跳过动画下载");
@@ -76,8 +81,8 @@ public class PixivSpider {
                             Pattern pattern = Pattern.compile("[0-9]+_p[0-9]+.[a-zA-Z]+");
                             Matcher matcher = pattern.matcher(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
                             matcher.find();
-                            String filename = info.userId + "_" + matcher.group(0);
-                            this.download(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString(), filename);
+                            info.baseName=matcher.group(0);
+                            this.download(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString(), Tools.getName(info));
                         }
                     }
 

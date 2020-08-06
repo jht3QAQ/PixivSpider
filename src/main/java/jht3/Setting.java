@@ -23,12 +23,14 @@ public class Setting {
 
     public static int threadPoolSize=6;
     public static int retrySleepTime=5000;
+    public static int maxImg=5;
 
     public static int minViewCount;
     public static int minBookmarkCount;
     public static String how;
 
     public static String fileUrl="img";
+    public static String fileName="${userId}_${baseName}";
 
     public static void initSetting(int startPage,int endPage,String ketword,int minViewCount,int minBookmarkCount,String how,String fileUrl){
         Setting.startPage=startPage;
@@ -66,12 +68,14 @@ public class Setting {
 
         Setting.threadPoolSize=properties.getInt("threadPoolSize", 6);
         Setting.retrySleepTime=properties.getInt("retrySleepTime", 500);
+        Setting.maxImg=properties.getInt("maxImg",5);
 
         Setting.minViewCount=properties.getInt("minViewCount", 2000);
         Setting.minBookmarkCount=properties.getInt("minBookmarkCount", 500);
         Setting.how=properties.getString("how","and");
 
         Setting.fileUrl=properties.getString("fileUrl","img");
+        Setting.fileName=properties.getString("fileName","${userId}_${baseName}");
 
         Setting.printSetting();
     }

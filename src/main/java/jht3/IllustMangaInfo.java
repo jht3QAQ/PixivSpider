@@ -3,17 +3,19 @@ package jht3;
 import com.google.gson.JsonObject;
 
 public class IllustMangaInfo {
-    boolean getIllustInfo = false;
+    public boolean getIllustInfo = false;
 
-    int illustId;
-    String illustTitle;
-    int userId;
-    int width;
-    int height;
+    public int illustId;
+    public String illustTitle;
+    public int userId;
+    public int width;
+    public int height;
 
-    String urlOriginal;
-    int bookmarkCount;
-    int viewCount;
+    public String urlOriginal;
+    public int bookmarkCount;
+    public int viewCount;
+
+    public String baseName;
 
     public IllustMangaInfo(int illustId,String illustTitle,int userId,int width,int height){
         this.illustId=illustId;
