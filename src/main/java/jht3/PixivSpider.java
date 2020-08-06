@@ -90,10 +90,10 @@ public class PixivSpider {
                         try {
                             File file = new File(Setting.fileUrl, filename);
                             if(!file.exists()){
+                                byte[] body= Tools.getByte(url);
                                 file.getParentFile().mkdirs();
                                 file.createNewFile();
                                 fos = new FileOutputStream(file);
-                                byte[] body= Tools.getByte(url);
                                 fos.write(body);
                                 fos.close();
                             }else{

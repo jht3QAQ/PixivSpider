@@ -38,6 +38,7 @@ public class Setting {
         Setting.minBookmarkCount=minBookmarkCount;
         Setting.how=how;
         Setting.fileUrl=fileUrl;
+        Setting.printSetting();
     }
 
     public static void initSetting(){
@@ -71,6 +72,17 @@ public class Setting {
         Setting.how=properties.getString("how","and");
 
         Setting.fileUrl=properties.getString("fileUrl","img");
+
+        Setting.printSetting();
+    }
+
+    static private final void printSetting(){
+        System.out.println("startPage:\t"+Setting.startPage);
+        System.out.println("endPage:\t"+Setting.endPage);
+        System.out.println("keyword:\t"+Setting.keyword);
+        System.out.println("how:\t"+Setting.how);
+        System.out.println("minViewCount:\t"+Setting.minViewCount);
+        System.out.println("minBookmarkCount:\t"+Setting.minBookmarkCount);
     }
 
     static private class PropertiesReader extends Properties{
@@ -101,7 +113,7 @@ public class Setting {
         }
         String getString(String key,String defaultValue){
             String val=this.getProperty(key, String.valueOf(defaultValue));
-            if(val==null||val==""){
+            if(val==null||val.isEmpty()){
                 return defaultValue;
             }else {
                 return val;
