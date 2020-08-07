@@ -19,4 +19,8 @@
 
 8'跳过已下载完的图片
 
+9'根据画的数量选择是否跳过下载
+
+10'自定义保存文件名称
+
 使用教程:<https://jht3.tk:8003/uncategorized/selfmadepixivcrawler.html>
