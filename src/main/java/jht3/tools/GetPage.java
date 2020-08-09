@@ -21,11 +21,11 @@ public class GetPage {
             .readTimeout(Setting.readTimeout,TimeUnit.SECONDS)
             .connectionPool(new ConnectionPool(7,7,TimeUnit.SECONDS))
             .retryOnConnectionFailure(true)
-            .sslSocketFactory(createTrustAllSSLFactory(trustAllManager), trustAllManager)
+            .sslSocketFactory(createTrustAllSSLFactory(), trustAllManager)
             .retryOnConnectionFailure(true)
             .build();
 
-    protected static final Object getPage(String url,Boolean isString){
+    protected static Object getPage(String url,Boolean isString){
         Request request = new Request.Builder().url(url).get()
                 //.addHeader("accept", "application/json")
                 .addHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6")
@@ -36,7 +36,7 @@ public class GetPage {
                 .build();
         Call call = okHttpClient.newCall(request);
         Response res = null;
-        Object body = "";
+        Object body;
         try {
             res=call.execute();
             if(isString)
@@ -57,25 +57,25 @@ public class GetPage {
                 }
                 body=GetPage.getPage(url,isString);
             }
-            return body;
         }
+        return body;
     }
-    private static final SSLSocketFactory createTrustAllSSLFactory(TrustAllManager trustAllManager) {
+    private static SSLSocketFactory createTrustAllSSLFactory() {
         SSLSocketFactory ssfFactory = null;
         try {
             SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{trustAllManager}, new SecureRandom());
+            sc.init(null, new TrustManager[]{GetPage.trustAllManager}, new SecureRandom());
             ssfFactory = sc.getSocketFactory();
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return ssfFactory;
     }
     static class TrustAllManager implements X509TrustManager {
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException { }
+        public void checkClientTrusted(X509Certificate[] chain, String authType){ }
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException { }
+        public void checkServerTrusted(X509Certificate[] chain, String authType){ }
         @Override public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
         }

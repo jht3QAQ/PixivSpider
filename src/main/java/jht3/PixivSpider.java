@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import jht3.tools.Tools;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -35,7 +34,7 @@ public class PixivSpider {
             for(IllustMangaInfo info:list){
                 fixedThreadPool.execute(new Runnable() {
                     IllustMangaInfo info;
-                    public String url = Setting.pixivUrl+"/ajax/illust/";
+                    public final String url = Setting.pixivUrl+"/ajax/illust/";
 
                     public Runnable setInfo(IllustMangaInfo info){
                         this.info=info;
@@ -70,7 +69,6 @@ public class PixivSpider {
                         String body = Tools.getPage(url + info.illustId + "/pages?lang=zh");
                         JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
                         JsonArray jsonArr = jsonObj.getAsJsonArray("body");
-                        int i = 0;
                         if(jsonArr.size()> Setting.maxImg){
                             System.out.println("跳过多图下载: "+jsonArr.size());
                             return;
