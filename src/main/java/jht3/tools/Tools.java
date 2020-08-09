@@ -24,7 +24,7 @@ public class Tools {
     }
 
     public static String getPageUrl(String keyWord, int p) {
-        return Setting.pixivUrl+"/ajax/search/artworks/" + keyWord + "?word=" + keyWord + "&mode=" + Setting.mode + "&p=" + p + "&type=" + Setting.type + "&lang" + Setting.lang + "s_mode" + Setting.s_mode;
+        return Setting.pixivUrl+"/ajax/search/artworks/" + keyWord + "?word=" + keyWord + "&mode=" + Setting.mode + "&p=" + p + "&type=" + Setting.type + "&lang=" + Setting.lang + "&s_mode=" + Setting.s_mode;
     }
 
 
