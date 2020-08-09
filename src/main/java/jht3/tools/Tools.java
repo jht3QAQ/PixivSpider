@@ -15,24 +15,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tools {
-    public static final String getPage(String url) {
+    public static String getPage(String url) {
         return (String) GetPage.getPage(url, true);
     }
 
-    public static final byte[] getByte(String url) {
+    public static byte[] getByte(String url) {
         return (byte[]) GetPage.getPage(url, false);
     }
 
-    public static final String getPageUrl(String keyWord, int p) {
-        return "https://www.pixiv.net/ajax/search/artworks/" + keyWord + "?word=" + keyWord + "&mode=" + Setting.mode + "&p=" + p + "&type=" + Setting.type + "&lang" + Setting.lang + "s_mode" + Setting.s_mode;
+    public static String getPageUrl(String keyWord, int p) {
+        return Setting.pixivUrl+"/ajax/search/artworks/" + keyWord + "?word=" + keyWord + "&mode=" + Setting.mode + "&p=" + p + "&type=" + Setting.type + "&lang" + Setting.lang + "s_mode" + Setting.s_mode;
     }
 
 
     private static final JsonParser jParser = new JsonParser();
 
-    public static final List<IllustMangaInfo> getIllustMangaInfoList(String body) {
-        List<IllustMangaInfo> illustMangaInfos = new LinkedList<IllustMangaInfo>();
-        JsonObject json = null;
+    public static List<IllustMangaInfo> getIllustMangaInfoList(String body) {
+        List<IllustMangaInfo> illustMangaInfos = new LinkedList<>();
+        JsonObject json;
         json = (JsonObject) Tools.jParser.parse(body);
         JsonArray datas = json.getAsJsonObject("body").getAsJsonObject("illustManga").getAsJsonArray("data");
         for (JsonElement data : datas) {
@@ -50,7 +50,7 @@ public class Tools {
     }
 
     public static String getName(IllustMangaInfo info) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("baseName", info.baseName);
         map.put("illustId", info.illustId);
         map.put("illustTitle", info.illustTitle);

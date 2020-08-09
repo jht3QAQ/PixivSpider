@@ -1,6 +1,9 @@
-#起始页 必填
+#pixiv地址(外一有镜像站呢?) 选填 默认https://pixiv.net
+pixivUrl=
+
+#起始页 选填 默认1
 startPage=
-#结束页 必填
+#结束页 选填 默认1000 (最多只能获取到1000 总页数不足1000将会获取到最后1页)
 endPage=
 
 #cookie 必填

@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,6 +24,10 @@ public class PixivSpider {
             System.out.println("正在获取第 "+i+" 页:");
             String body = Tools.getPage(Tools.getPageUrl(Setting.keyword, i));
             List<IllustMangaInfo> list=Tools.getIllustMangaInfoList(body);
+            if(list.size()==0) {
+                System.out.println("全部页面已获取完成");
+                return;
+            }
             //一阶段完成~~~~~~
             CountDownLatch count = new CountDownLatch(list.size());
             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
@@ -32,7 +35,7 @@ public class PixivSpider {
             for(IllustMangaInfo info:list){
                 fixedThreadPool.execute(new Runnable() {
                     IllustMangaInfo info;
-                    public static final String url = "https://www.pixiv.net/ajax/illust/";
+                    public String url = Setting.pixivUrl+"/ajax/illust/";
 
                     public Runnable setInfo(IllustMangaInfo info){
                         this.info=info;
@@ -55,21 +58,21 @@ public class PixivSpider {
                         System.out.println("illustTitle: "+info.illustTitle+"\tviewCount"+viewCount+"\tbookmarkCount"+bookmarkCount);
                         info.viewCount = viewCount;
                         info.bookmarkCount = bookmarkCount;
-                        if ((Setting.how=="and"&&viewCount >= Setting.minViewCount && bookmarkCount >= Setting.minBookmarkCount)||
-                            (Setting.how=="or"&&(viewCount>=Setting.minViewCount||bookmarkCount>=Setting.minBookmarkCount))) {
-                            System.out.println("获取下载链接中: "+info.illustTitle);
+                        if ((Setting.how.equals("and")&&viewCount >= Setting.minViewCount && bookmarkCount >= Setting.minBookmarkCount)||
+                            (Setting.how.equals("or")&&(viewCount>=Setting.minViewCount||bookmarkCount>=Setting.minBookmarkCount))) {
+                            System.out.println("获取下载链接中: "+info.illustId+"\t"+info.illustTitle);
                             this.getDownloadUrl();
                         }
                     }
 
                     public void getDownloadUrl(){
-                        String url = "https://www.pixiv.net/ajax/illust/";
+                        String url = Setting.pixivUrl+"/ajax/illust/";
                         String body = Tools.getPage(url + info.illustId + "/pages?lang=zh");
                         JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
                         JsonArray jsonArr = jsonObj.getAsJsonArray("body");
                         int i = 0;
                         if(jsonArr.size()> Setting.maxImg){
-                            System.out.println("跳过多图下载");
+                            System.out.println("跳过多图下载: "+jsonArr.size());
                             return;
                         }
                         for (JsonElement imgs : jsonArr) {
@@ -91,7 +94,7 @@ public class PixivSpider {
                             System.out.println("跳过下载动画");
                             return;
                         }
-                        FileOutputStream fos=null;
+                        FileOutputStream fos;
                         try {
                             File file = new File(Setting.fileUrl, filename);
                             if(!file.exists()){
@@ -104,9 +107,7 @@ public class PixivSpider {
                             }else{
                                 System.out.println("文件已存在，跳过下载: "+filename);
                             }
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
+                        }catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
