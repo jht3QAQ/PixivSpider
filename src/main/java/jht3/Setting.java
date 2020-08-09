@@ -52,7 +52,7 @@ public class Setting {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Setting.pixivUrl=properties.getString("pixivUrl","https://pixiv,net");
+        Setting.pixivUrl=properties.getString("pixivUrl","https://pixiv.net");
 
         Setting.startPage=properties.getInt("startPage",1);
         Setting.endPage=properties.getInt("endPage",1000);

@@ -9,7 +9,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
 
@@ -39,10 +38,12 @@ public class GetPage {
         Object body;
         try {
             res=call.execute();
-            if(isString)
-                body=res.body().string();
-            else
-                body=res.body().bytes();
+            if(isString) {
+                body = res.body().string();
+            }
+            else {
+                body = res.body().bytes();
+            }
         } catch (IOException e) {
             System.out.println("重新尝试获取 "+url);
             body = GetPage.getPage(url,isString);

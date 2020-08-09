@@ -47,7 +47,6 @@ public class PixivSpider {
                         count.countDown();
                     }
 
-
                     public final JsonParser jParser = new JsonParser();
                     public void getInfo(){
                         String body = Tools.getPage(url + info.illustId);
