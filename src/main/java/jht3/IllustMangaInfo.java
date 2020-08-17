@@ -25,6 +25,12 @@ public class IllustMangaInfo {
         this.height=height;
     }
 
+    public IllustMangaInfo(int illustId,String illustTitle,int userId){
+        this.illustId=illustId;
+        this.illustTitle=illustTitle;
+        this.userId=userId;
+    }
+
     public JsonObject getJsonObj(){
         JsonObject jo=new JsonObject();
         jo.addProperty("getIllustInfo",getIllustInfo);

@@ -28,7 +28,7 @@ public class Tools {
     }
 
 
-    private static final JsonParser jParser = new JsonParser();
+    public static final JsonParser jParser = new JsonParser();
 
     public static List<IllustMangaInfo> getIllustMangaInfoList(String body) {
         List<IllustMangaInfo> illustMangaInfos = new LinkedList<>();
@@ -66,7 +66,7 @@ public class Tools {
 
     private static String processTemplate(String template, Map<String, Object> params) {
         StringBuffer sb = new StringBuffer();
-        Matcher m = Pattern.compile("\\$\\{\\w+\\}").matcher(template);
+        Matcher m = Pattern.compile("\\$\\{\\w+}").matcher(template);
         while (m.find()) {
             String param = m.group();
             Object value = params.get(param.substring(2, param.length() - 1));

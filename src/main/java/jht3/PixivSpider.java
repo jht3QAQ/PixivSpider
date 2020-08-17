@@ -1,24 +1,32 @@
 package jht3;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import jht3.tools.GetImg;
 import jht3.tools.Tools;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PixivSpider {
     public static void main(String[] args) throws InterruptedException {
         Setting.initSetting();
+        switch (Setting.searchMode) {
+            case "keyword":
+                getByKetname();
+                break;
+            case "uid":
+                getByUid();
+                break;
+        }
+    }
+
+    public static void getByKetname() throws InterruptedException {
         for(int i = Setting.startPage; i<= Setting.endPage; i++){
             System.out.println("正在获取第 "+i+" 页:");
             String body = Tools.getPage(Tools.getPageUrl(Setting.keyword, i));
@@ -32,86 +40,78 @@ public class PixivSpider {
             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
 
             for(IllustMangaInfo info:list){
-                fixedThreadPool.execute(new Runnable() {
-                    IllustMangaInfo info;
-                    public final String url = Setting.pixivUrl+"/ajax/illust/";
-
-                    public Runnable setInfo(IllustMangaInfo info){
-                        this.info=info;
-                        return this;
-                    }
-
-                    @Override
-                    public void run() {
-                        this.getInfo();
-                        count.countDown();
-                    }
-
-                    public final JsonParser jParser = new JsonParser();
-                    public void getInfo(){
-                        String body = Tools.getPage(url + info.illustId);
-                        JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
-                        int viewCount = jsonObj.getAsJsonObject("body").get("viewCount").getAsInt();
-                        int bookmarkCount = jsonObj.getAsJsonObject("body").get("bookmarkCount").getAsInt();
-                        System.out.println("illustTitle: "+info.illustTitle+"\tviewCount"+viewCount+"\tbookmarkCount"+bookmarkCount);
-                        info.viewCount = viewCount;
-                        info.bookmarkCount = bookmarkCount;
-                        if ((Setting.how.equals("and")&&viewCount >= Setting.minViewCount && bookmarkCount >= Setting.minBookmarkCount)||
-                            (Setting.how.equals("or")&&(viewCount>=Setting.minViewCount||bookmarkCount>=Setting.minBookmarkCount))) {
-                            System.out.println("获取下载链接中: "+info.illustId+"\t"+info.illustTitle);
-                            this.getDownloadUrl();
-                        }
-                    }
-
-                    public void getDownloadUrl(){
-                        String url = Setting.pixivUrl+"/ajax/illust/";
-                        String body = Tools.getPage(url + info.illustId + "/pages?lang=zh");
-                        JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
-                        JsonArray jsonArr = jsonObj.getAsJsonArray("body");
-                        if(jsonArr.size()> Setting.maxImg){
-                            System.out.println("跳过多图下载: "+jsonArr.size());
-                            return;
-                        }
-                        for (JsonElement imgs : jsonArr) {
-                            if(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString().contains("ugoira")) {
-                                System.out.println("跳过动画下载");
-                                return;
-                            }
-                            System.out.println("正在下载: " + imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
-                            Pattern pattern = Pattern.compile("[0-9]+_p[0-9]+.[a-zA-Z]+");
-                            Matcher matcher = pattern.matcher(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
-                            matcher.find();
-                            info.baseName=matcher.group(0);
-                            this.download(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString(), Tools.getName(info));
-                        }
-                    }
-
-                    public void download(String url,String filename){
-                        if(filename.contains("ugoira")){
-                            System.out.println("跳过下载动画");
-                            return;
-                        }
-                        FileOutputStream fos;
-                        try {
-                            File file = new File(Setting.fileUrl, filename);
-                            if(!file.exists()){
-                                byte[] body= Tools.getByte(url);
-                                file.getParentFile().mkdirs();
-                                file.createNewFile();
-                                fos = new FileOutputStream(file);
-                                fos.write(body);
-                                fos.close();
-                            }else{
-                                System.out.println("文件已存在，跳过下载: "+filename);
-                            }
-                        }catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.setInfo(info));
+                fixedThreadPool.execute(new GetImg(info,count));
             }
             count.await();
             fixedThreadPool.shutdown();
         }
+    }
+
+    public static void getByUid() throws InterruptedException {
+        System.out.println("正在获取画师 "+Setting.keyword+" 作品信息");
+        String body=Tools.getPage(Setting.pixivUrl+"/ajax/user/"+Setting.keyword+"/profile/all?lang="+Setting.lang);
+        JsonObject json = (JsonObject) Tools.jParser.parse(body);
+        Set<Map.Entry<String, JsonElement>> set=json.getAsJsonObject("body").getAsJsonObject("illusts").entrySet();
+        System.out.println(Setting.keyword+" 共有 "+set.size()+" 件作品");
+        String sStart=Setting.pixivUrl+"/ajax/user/"+Setting.keyword+"/profile/illusts?";
+        String sEnd="work_category=illustManga&is_first_page=1&lang=zh";
+        StringBuffer sb = new StringBuffer(sStart);
+        int i=0;
+        for(Map.Entry<String, JsonElement> enty:set){
+            if(i<48) {
+                sb.append("ids[]=").append(enty.getKey()).append("&");
+            }else{
+                sb.append(sEnd);
+                String body2=Tools.getPage(sb.toString());
+                List<IllustMangaInfo> illustMangaInfos = new LinkedList<>();
+                JsonObject json2 = (JsonObject) Tools.jParser.parse(body2);
+                Set<Map.Entry<String, JsonElement>> set2=json2.getAsJsonObject("body").getAsJsonObject("works").entrySet();
+                for(Map.Entry<String, JsonElement> entry:set2){
+                    JsonObject illust=entry.getValue().getAsJsonObject();
+                    IllustMangaInfo info=new IllustMangaInfo(
+                            illust.get("illustId").getAsInt(),
+                            illust.get("illustTitle").getAsString(),
+                            illust.get("userId").getAsInt(),
+                            illust.get("width").getAsInt(),
+                            illust.get("height").getAsInt()
+                    );
+                    illustMangaInfos.add(info);
+                }
+                CountDownLatch count = new CountDownLatch(illustMangaInfos.size());
+                ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
+                for(IllustMangaInfo info:illustMangaInfos){
+                    fixedThreadPool.execute(new GetImg(info,count));
+                }
+                count.await();
+                fixedThreadPool.shutdown();
+
+                sb=new StringBuffer(sStart);
+                i=0;
+            }
+            i++;
+        }
+        sb.append(sEnd);
+        String body2=Tools.getPage(sb.toString());
+        List<IllustMangaInfo> illustMangaInfos = new LinkedList<>();
+        JsonObject json2 = (JsonObject) Tools.jParser.parse(body2);
+        Set<Map.Entry<String, JsonElement>> set2=json2.getAsJsonObject("body").getAsJsonObject("works").entrySet();
+        for(Map.Entry<String, JsonElement> entry:set2){
+            JsonObject illust=entry.getValue().getAsJsonObject();
+            IllustMangaInfo info=new IllustMangaInfo(
+                    illust.get("illustId").getAsInt(),
+                    illust.get("illustTitle").getAsString(),
+                    illust.get("userId").getAsInt(),
+                    illust.get("width").getAsInt(),
+                    illust.get("height").getAsInt()
+            );
+            illustMangaInfos.add(info);
+        }
+        CountDownLatch count = new CountDownLatch(illustMangaInfos.size());
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
+        for(IllustMangaInfo info:illustMangaInfos){
+            fixedThreadPool.execute(new GetImg(info,count));
+        }
+        count.await();
+        fixedThreadPool.shutdown();
     }
 }

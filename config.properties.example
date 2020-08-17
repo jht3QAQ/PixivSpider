@@ -13,8 +13,12 @@ connectTimeout=
 #读取超时设置 单位秒 选填 默认120
 readTimeout=
 
-#搜索关键字 必填
+#搜索模式 必填 可选keyword/uid
+searchMode=
+#搜索关键字 必填 如searchMode为keyword则填搜索关键字 如果为uid则添画师uid
 keyword=
+#uid模式是否根据浏览数/收藏数/图片数进行筛选 选填 默认true (true为不筛选) 可选true/false
+isAll=
 #搜索模式 选填 默认saft 可选all/safe/r18
 mode=
 #语言 选填 默认zh
