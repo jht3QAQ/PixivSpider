@@ -12,6 +12,8 @@ cookie=
 connectTimeout=
 #读取超时设置 单位秒 选填 默认120
 readTimeout=
+#分段下载大小 单位MB 选填 默认0.5,填0关闭分段下载
+range=
 
 #搜索模式 必填 可选keyword/uid
 searchMode=

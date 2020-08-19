@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jht3.IllustMangaInfo;
 import jht3.Setting;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,16 +62,17 @@ public class GetImg implements Runnable{
                 System.out.println("跳过动画下载");
                 return;
             }
-            System.out.println("正在下载: " + imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
+            //System.out.println("正在下载: " + imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
             Pattern pattern = Pattern.compile("[0-9]+_p[0-9]+.[a-zA-Z]+");
             Matcher matcher = pattern.matcher(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
             matcher.find();
             info.baseName=matcher.group(0);
-            this.download(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString(), Tools.getName(info));
+            this.download(imgs.getAsJsonObject().getAsJsonObject("urls").get("original").getAsString());
         }
     }
 
-    public void download(String url,String filename){
+    public void download(String url){
+        String filename=Tools.getName(info);
         if(filename.contains("ugoira")){
             System.out.println("跳过下载动画");
             return;
@@ -79,7 +81,29 @@ public class GetImg implements Runnable{
         try {
             File file = new File(Setting.fileUrl, filename);
             if(!file.exists()){
-                byte[] body= Tools.getByte(url);
+                Response res=Tools.getHead(url);
+                System.out.println("正在下载: "+filename+"\t文件大小: "+res.body().contentLength());
+                byte[] body;
+                if(Setting.range>0){
+                    body=new byte[(int) res.body().contentLength()];
+                    int from=0;
+                    while (from<res.body().contentLength()){
+                        if(from+Setting.range<=res.body().contentLength()) {
+                            System.out.println("正在下载: "+filename+"\tfrom: "+from+"\tto: "+(from+Setting.range));
+                            byte[] temp=Tools.getByte(url, from, from+Setting.range);
+                            System.arraycopy(temp,0,body,from,temp.length);
+                            from += temp.length;
+                        }else{
+                            byte[] temp=Tools.getByte(url,from);
+                            System.out.println("正在下载: "+filename+"\tfrom: "+from+"\tto: end");
+                            System.arraycopy(temp,0,body,from,temp.length);
+                            break;
+                        }
+                    }
+                }else {
+                    body=Tools.getByte(url);
+                }
+
                 file.getParentFile().mkdirs();
                 file.createNewFile();
                 fos = new FileOutputStream(file);

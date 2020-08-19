@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jht3.IllustMangaInfo;
 import jht3.Setting;
+import okhttp3.Response;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,14 +20,23 @@ public class Tools {
         return (String) GetPage.getPage(url, true);
     }
 
+    public static Response getHead(String url){return GetPage.getHead(url);}
+
     public static byte[] getByte(String url) {
         return (byte[]) GetPage.getPage(url, false);
+    }
+
+    public static byte[] getByte(String url,int from){
+        return (byte[]) GetPage.getPage(url, false, (builder) -> builder.addHeader("Range", "bytes=" + from + '-').removeHeader("Cookie"));
+    }
+
+    public static byte[] getByte(String url,int from,int to){
+        return (byte[]) GetPage.getPage(url, false, (builder) -> { builder.addHeader("Range", "bytes=" + from + '-' + to).removeHeader("Cookie"); });
     }
 
     public static String getPageUrl(String keyWord, int p) {
         return Setting.pixivUrl+"/ajax/search/artworks/" + keyWord + "?word=" + keyWord + "&mode=" + Setting.mode + "&p=" + p + "&type=" + Setting.type + "&lang=" + Setting.lang + "&s_mode=" + Setting.s_mode;
     }
-
 
     public static final JsonParser jParser = new JsonParser();
 
