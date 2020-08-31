@@ -23,4 +23,8 @@
 
 10'自定义保存文件名称
 
+11'支持分段下载
+
+12'支持任务列表
+
 使用教程:<https://jht3.tk:8003/uncategorized/selfmadepixivcrawler.html>
