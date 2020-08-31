@@ -16,7 +16,7 @@ public class Setting {
     public static int readTimeout = 120;
     public static int range = 524288;//0.5MB
 
-    public static String searchMode;
+    //public static String searchMode;
     public static String keyword;
     public static String mode="safe";
     public static String lang="zh";
@@ -30,6 +30,7 @@ public class Setting {
     public static int minViewCount;
     public static int minBookmarkCount;
     public static String how;
+    public static boolean isAll=true;
 
     public static String fileUrl="img";
     public static String fileName="${userId}_${baseName}";
@@ -42,7 +43,7 @@ public class Setting {
         Setting.minBookmarkCount=minBookmarkCount;
         Setting.how=how;
         Setting.fileUrl=fileUrl;
-        Setting.searchMode=searchMode;
+        //Setting.searchMode=searchMode;
         Setting.printSetting();
     }
 
@@ -65,7 +66,7 @@ public class Setting {
         Setting.readTimeout=properties.getInt("readTimeout", 120);
         Setting.range=(int)(properties.getDouble("rang",0.5)*1024*1024);
 
-        Setting.searchMode=properties.getString("searchMode");
+        //Setting.searchMode=properties.getString("searchMode");
         Setting.keyword=properties.getString("keyword");
         Setting.mode=properties.getString("mode","safe");
         Setting.lang=properties.getString("lang","zh");
@@ -79,15 +80,15 @@ public class Setting {
         Setting.minViewCount=properties.getInt("minViewCount", 2000);
         Setting.minBookmarkCount=properties.getInt("minBookmarkCount", 500);
         Setting.how=properties.getString("how","and");
-
+        Setting.isAll=properties.getString("isAll","true").equals("true");
         Setting.fileUrl=properties.getString("fileUrl","img");
         Setting.fileName=properties.getString("fileName","${userId}_${baseName}");
 
-        if(Setting.searchMode.equals("uid")&&properties.getString("isAll","true").equals("true")){
-            Setting.maxImg=9999;
-            Setting.minBookmarkCount=0;
-            Setting.minViewCount=0;
-        }
+        //if(Setting.searchMode.equals("uid")&&properties.getString("isAll","true").equals("true")){
+        //    Setting.maxImg=9999;
+        //    Setting.minBookmarkCount=0;
+        //    Setting.minViewCount=0;
+        //}
 
         Setting.printSetting();
     }

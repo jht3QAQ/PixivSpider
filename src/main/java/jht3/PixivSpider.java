@@ -1,5 +1,6 @@
 package jht3;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jht3.tools.GetImg;
@@ -16,20 +17,20 @@ import java.util.concurrent.Executors;
 public class PixivSpider {
     public static void main(String[] args) throws InterruptedException {
         Setting.initSetting();
-        switch (Setting.searchMode) {
-            case "keyword":
-                getByKetname();
-                break;
-            case "uid":
-                getByUid();
-                break;
+        JsonArray array = (JsonArray) Tools.jParser.parse(Setting.keyword);
+        for(JsonElement element:array){
+            if(element.getAsJsonPrimitive().isString()){
+                getByKetname(element.getAsString());
+            }else {
+                getByUid(element.getAsInt());
+            }
         }
     }
 
-    public static void getByKetname() throws InterruptedException {
+    public static void getByKetname(String key) throws InterruptedException {
         for(int i = Setting.startPage; i<= Setting.endPage; i++){
             System.out.println("正在获取第 "+i+" 页:");
-            String body = Tools.getPage(Tools.getPageUrl(Setting.keyword, i));
+            String body = Tools.getPage(Tools.getPageUrl(key, i));
             List<IllustMangaInfo> list=Tools.getIllustMangaInfoList(body);
             if(list.size()==0) {
                 System.out.println("全部页面已获取完成");
@@ -47,13 +48,13 @@ public class PixivSpider {
         }
     }
 
-    public static void getByUid() throws InterruptedException {
-        System.out.println("正在获取画师 "+Setting.keyword+" 作品信息");
-        String body=Tools.getPage(Setting.pixivUrl+"/ajax/user/"+Setting.keyword+"/profile/all?lang="+Setting.lang);
+    public static void getByUid(int uid) throws InterruptedException {
+        System.out.println("正在获取画师 "+uid+" 作品信息");
+        String body=Tools.getPage(Setting.pixivUrl+"/ajax/user/"+uid+"/profile/all?lang="+Setting.lang);
         JsonObject json = (JsonObject) Tools.jParser.parse(body);
         Set<Map.Entry<String, JsonElement>> set=json.getAsJsonObject("body").getAsJsonObject("illusts").entrySet();
-        System.out.println(Setting.keyword+" 共有 "+set.size()+" 件作品");
-        String sStart=Setting.pixivUrl+"/ajax/user/"+Setting.keyword+"/profile/illusts?";
+        System.out.println(uid+" 共有 "+set.size()+" 件作品");
+        String sStart=Setting.pixivUrl+"/ajax/user/"+uid+"/profile/illusts?";
         String sEnd="work_category=illustManga&is_first_page=1&lang=zh";
         StringBuffer sb = new StringBuffer(sStart);
         int i=0;
@@ -80,7 +81,7 @@ public class PixivSpider {
                 CountDownLatch count = new CountDownLatch(illustMangaInfos.size());
                 ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
                 for(IllustMangaInfo info:illustMangaInfos){
-                    fixedThreadPool.execute(new GetImg(info,count));
+                    fixedThreadPool.execute(new GetImg(info,count,Setting.isAll));
                 }
                 count.await();
                 fixedThreadPool.shutdown();
@@ -109,7 +110,7 @@ public class PixivSpider {
         CountDownLatch count = new CountDownLatch(illustMangaInfos.size());
         ExecutorService fixedThreadPool = Executors.newFixedThreadPool(Setting.threadPoolSize);
         for(IllustMangaInfo info:illustMangaInfos){
-            fixedThreadPool.execute(new GetImg(info,count));
+            fixedThreadPool.execute(new GetImg(info,count,Setting.isAll));
         }
         count.await();
         fixedThreadPool.shutdown();

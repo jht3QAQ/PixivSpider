@@ -15,10 +15,9 @@ readTimeout=
 #分段下载大小 单位MB 选填 默认0.5,填0关闭分段下载
 range=
 
-#搜索模式 必填 可选keyword/uid
-searchMode=
-#搜索关键字 必填 如searchMode为keyword则填搜索关键字 如果为uid则添画师uid
-keyword=
+
+#搜索关键字组 必填 如['test',8888] 为爬取关键字为test的图片 和 uid为8888画师的图片
+keyword=[]
 #uid模式是否根据浏览数/收藏数/图片数进行筛选 选填 默认true (true为不筛选) 可选true/false
 isAll=
 #搜索模式 选填 默认saft 可选all/safe/r18

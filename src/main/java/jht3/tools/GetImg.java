@@ -20,10 +20,18 @@ public class GetImg implements Runnable{
     IllustMangaInfo info;
     CountDownLatch count;
     public final String url = Setting.pixivUrl+"/ajax/illust/";
+    Boolean isDownloadAll;
 
     public GetImg(IllustMangaInfo info, CountDownLatch count){
         this.info=info;
         this.count=count;
+        this.isDownloadAll=false;
+    }
+
+    public GetImg(IllustMangaInfo info, CountDownLatch count,Boolean isDownloadAll){
+        this.info=info;
+        this.count=count;
+        this.isDownloadAll=isDownloadAll;
     }
 
     @Override
@@ -41,8 +49,9 @@ public class GetImg implements Runnable{
         System.out.println("illustTitle: "+info.illustTitle+"\tviewCount"+viewCount+"\tbookmarkCount"+bookmarkCount);
         info.viewCount = viewCount;
         info.bookmarkCount = bookmarkCount;
-        if ((Setting.how.equals("and")&&viewCount >= Setting.minViewCount && bookmarkCount >= Setting.minBookmarkCount)||
-                (Setting.how.equals("or")&&(viewCount>=Setting.minViewCount||bookmarkCount>=Setting.minBookmarkCount))) {
+        if (this.isDownloadAll||
+                ( (Setting.how.equals("and")&&viewCount >= Setting.minViewCount && bookmarkCount >= Setting.minBookmarkCount)||
+                  (Setting.how.equals("or")&&(viewCount>=Setting.minViewCount||bookmarkCount>=Setting.minBookmarkCount))) ) {
             System.out.println("获取下载链接中: "+info.illustId+"\t"+info.illustTitle);
             this.getDownloadUrl();
         }
@@ -53,7 +62,7 @@ public class GetImg implements Runnable{
         String body = Tools.getPage(url + info.illustId + "/pages?lang=zh");
         JsonObject jsonObj = (JsonObject) this.jParser.parse(body);
         JsonArray jsonArr = jsonObj.getAsJsonArray("body");
-        if(jsonArr.size()> Setting.maxImg){
+        if(!this.isDownloadAll&&jsonArr.size()> Setting.maxImg){
             System.out.println("跳过多图下载: "+jsonArr.size());
             return;
         }
