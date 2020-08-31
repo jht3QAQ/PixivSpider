@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'jht3'
-version '1.1.0-SNAPSHOT'
+version '1.1.1'
 
 repositories {
     mavenCentral()
@@ -18,4 +18,15 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'jht3.PixivSpider'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    into('lib') {
+        from 'lib'
+    }
+
 }
