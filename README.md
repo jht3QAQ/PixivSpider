@@ -27,4 +27,6 @@
 
 12'支持任务列表
 
+13'支持设置镜像站
+
 使用教程:<https://jht3.tk:8003/uncategorized/selfmadepixivcrawler.html>
