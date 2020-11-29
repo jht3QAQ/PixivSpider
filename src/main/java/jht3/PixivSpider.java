@@ -63,6 +63,7 @@ public class PixivSpider {
                 sb.append("ids[]=").append(enty.getKey()).append("&");
             }else{
                 sb.append(sEnd);
+                //System.out.println(sb.toString());
                 String body2=Tools.getPage(sb.toString());
                 List<IllustMangaInfo> illustMangaInfos = new LinkedList<>();
                 JsonObject json2 = (JsonObject) Tools.jParser.parse(body2);
@@ -70,8 +71,8 @@ public class PixivSpider {
                 for(Map.Entry<String, JsonElement> entry:set2){
                     JsonObject illust=entry.getValue().getAsJsonObject();
                     IllustMangaInfo info=new IllustMangaInfo(
-                            illust.get("illustId").getAsInt(),
-                            illust.get("illustTitle").getAsString(),
+                            illust.get("id").getAsInt(),
+                            illust.get("title").getAsString(),
                             illust.get("userId").getAsInt(),
                             illust.get("width").getAsInt(),
                             illust.get("height").getAsInt()
@@ -99,8 +100,8 @@ public class PixivSpider {
         for(Map.Entry<String, JsonElement> entry:set2){
             JsonObject illust=entry.getValue().getAsJsonObject();
             IllustMangaInfo info=new IllustMangaInfo(
-                    illust.get("illustId").getAsInt(),
-                    illust.get("illustTitle").getAsString(),
+                    illust.get("id").getAsInt(),
+                    illust.get("title").getAsString(),
                     illust.get("userId").getAsInt(),
                     illust.get("width").getAsInt(),
                     illust.get("height").getAsInt()

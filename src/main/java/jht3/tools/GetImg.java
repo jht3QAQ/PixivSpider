@@ -94,6 +94,7 @@ public class GetImg implements Runnable{
                 System.out.println("正在下载: "+filename+"\t文件大小: "+res.body().contentLength());
                 byte[] body;
                 if(Setting.range>0){
+                    if((int) res.body().contentLength()==-1)return;
                     body=new byte[(int) res.body().contentLength()];
                     int from=0;
                     while (from<res.body().contentLength()){
