@@ -29,4 +29,6 @@
 
 13'支持设置镜像站
 
+14'支持设置代理
+
 使用教程:<https://jht3.tk:8003/uncategorized/selfmadepixivcrawler.html>
