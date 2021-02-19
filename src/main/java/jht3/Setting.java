@@ -1,12 +1,22 @@
 package jht3;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import jht3.tools.Tools;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class Setting {
     public static String pixivUrl="https://pixiv.net";
+
+    public static boolean isUsingProxy=false;
+    public static String proxyIP;
+    public static int proxyPort;
 
     public static int startPage=1;
     public static int endPage=1000;
@@ -57,6 +67,12 @@ public class Setting {
             e.printStackTrace();
         }
         Setting.pixivUrl=properties.getString("pixivUrl","https://pixiv.net");
+
+        Setting.isUsingProxy=properties.getBoolean("isUsingProxy",false);
+        if(Setting.isUsingProxy){
+            Setting.proxyIP=properties.getString("proxyIP");
+            Setting.proxyPort=properties.getInt("proxyPort");
+        }
 
         Setting.startPage=properties.getInt("startPage",1);
         Setting.endPage=properties.getInt("endPage",1000);
@@ -139,6 +155,23 @@ public class Setting {
             }
         }
 
+        boolean getoolean(String key){
+            String val=this.getProperty(key);
+            if(val==null||val.isEmpty()){
+                throw new NullPointerException(key+"不能为空");
+            }else{
+                return Boolean.parseBoolean(val);
+            }
+        }
+        boolean getBoolean(String key,boolean defaultValue){
+            String val=this.getProperty(key, String.valueOf(defaultValue));
+            if(val==null||val.isEmpty()){
+                return defaultValue;
+            }else {
+                return Boolean.parseBoolean(val);
+            }
+        }
+
         String getString(String key){
             String val = this.getProperty(key);
             if(val==null||val.isEmpty()){
@@ -153,6 +186,33 @@ public class Setting {
                 return defaultValue;
             }else {
                 return val;
+            }
+        }
+
+        String[] getStrings(String key){
+            String val=this.getProperty(key);
+            if(val==null||val.isEmpty()){
+                throw new NullPointerException(key+"不能为空");
+            }else{
+                JsonArray json=Tools.jParser.parse(val).getAsJsonArray();
+                ArrayList<String> arr= new ArrayList<>();
+                for(JsonElement ele:json){
+                    arr.add(ele.getAsString());
+                }
+                return arr.toArray(new String[0]);
+            }
+        }
+        String[] getStrings(String key,String[] defaultValue){
+            String val=this.getProperty(key, Arrays.toString(defaultValue));
+            if(val==null||val.isEmpty()){
+                return defaultValue;
+            }else {
+                JsonArray json=Tools.jParser.parse(val).getAsJsonArray();
+                ArrayList<String> arr=new ArrayList<>();
+                for(JsonElement ele:json){
+                    arr.add(ele.getAsString());
+                }
+                return arr.toArray(new String[0]);
             }
         }
     }
