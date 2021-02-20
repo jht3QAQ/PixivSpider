@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 public class GetPage {
@@ -25,6 +26,7 @@ public class GetPage {
 
         if(Setting.isUsingProxy){
             builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(Setting.proxyIP, Setting.proxyPort)));
+            builder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
         }
 
         GetPage.okHttpClient = builder.build();

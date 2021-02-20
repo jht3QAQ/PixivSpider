@@ -88,6 +88,7 @@ public class PixivSpider {
                 fixedThreadPool.shutdown();
 
                 sb=new StringBuffer(sStart);
+                sb.append("ids[]=").append(enty.getKey()).append("&");
                 i=0;
             }
             i++;
