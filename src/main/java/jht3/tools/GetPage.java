@@ -44,6 +44,7 @@ public class GetPage {
                 .addHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6")
                 .addHeader("Connection","close")
                 .addHeader("Cookie", Setting.cookie)
+                .addHeader("Accept-Encoding", "identity")
                 .addHeader("Referer", "https://www.pixiv.net")
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.26 Safari/537.36 Edg/85.0.564.13");
         if(setHeder!=null)
@@ -82,6 +83,7 @@ public class GetPage {
         Request request = new Request.Builder().url(url).get()
                 .addHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6")
                 //.addHeader("Cookie", Setting.cookie)
+                .addHeader("Accept-Encoding", "identity")
                 .addHeader("Referer", "https://www.pixiv.net")
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.26 Safari/537.36 Edg/85.0.564.13")
                 .build();
