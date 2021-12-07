@@ -31,7 +31,7 @@ public class Tools {
     }
 
     public static byte[] getByte(String url,int from,int to){
-        return (byte[]) GetPage.getPage(url, false, (builder) -> { builder.addHeader("Range", "bytes=" + from + '-' + to).removeHeader("Cookie"); });
+        return (byte[]) GetPage.getPage(url, false, (builder) -> builder.addHeader("Range", "bytes=" + from + '-' + to).removeHeader("Cookie"));
     }
 
     public static String getPageUrl(String keyWord, int p) {
@@ -47,8 +47,18 @@ public class Tools {
         JsonArray datas = json.getAsJsonObject("body").getAsJsonObject("illustManga").getAsJsonArray("data");
         for (JsonElement data : datas) {
             JsonObject dataObj = data.getAsJsonObject();
-            int illustId = dataObj.get("illustId").getAsInt();
-            String illustTitle = dataObj.get("illustTitle").getAsString();
+            int illustId;
+            if(dataObj.has("illustId")){
+                illustId = dataObj.get("illustId").getAsInt();
+            }else{
+                illustId = dataObj.get("id").getAsInt();
+            }
+            String illustTitle;
+            if(dataObj.has("illustTitle")){
+                illustTitle = dataObj.get("illustTitle").getAsString();
+            }else{
+                illustTitle = dataObj.get("title").getAsString();
+            }
             int userId = dataObj.get("userId").getAsInt();
             int width = dataObj.get("width").getAsInt();
             int height = dataObj.get("height").getAsInt();
